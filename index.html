@@ -73,5 +73,108 @@
         40% { transform: translateY(-5px); }
         60% { transform: translateY(-3px); }
       }
+
+      /* Layar Passcode (PIN) - Awalnya disembunyikan */
+      #passcodeScreen {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(20px);
+        display: none; /* Disembunyikan dulu */
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 20;
+        text-align: center;
+      }
+
+      .passcode-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 20px;
+      }
+
+      .btn-back {
+        background: rgba(255,255,255,0.2);     
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        margin-top: 20px;
+        cursor: pointer;
+      } 
      </style>
   </head>
+  <body>
+
+  <!-- Kerangka Utama HP -->
+    <div class="iphone-frame">
+
+        <!-- 2. KERANGKA ISI (HTML): Tampilan Lockscreen -->
+        <div id="lockscreen">
+            <div>
+                <div class="lock-date">Selasa, 27 Oktober</div>
+                <div class="lock-time">21:00</div>
+            </div>
+            <div class="swipe-text">Usap ke atas untuk membuka </div>
+        </div>
+
+        <!-- 3. KERANGKA ISI (HTML): Tampilan Passcode (PIN) -->
+        <div id="passcodeScreen">
+            <div class="passcode-title">Masukkan PIN</div>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 20px;">(Kotak PIN angka akan kita buat selanjutnya)</p>
+            <button class="btn-back" onclick="tutupPasscode()">Kembali ke Lockscreen</button>
+        </div>
+
+    </div>
+
+    <!-- 4. OTAK / INTERAKSI (JavaScript) -->
+    <script>
+        const lockscreen = document.getElementById('lockscreen');
+        const passcodeScreen = document.getElementById('passcodeScreen');
+
+        let startY = 0;
+        let isMouseDown = false;
+
+        // A. Fungsi untuk memunculkan layar passcode
+        function bukaPasscode() {
+            passcodeScreen.style.display = 'flex';
+        }
+
+        // B. Fungsi untuk menutup kembali layar passcode
+        function tutupPasscode() {
+            passcodeScreen.style.display = 'none';
+        }
+
+        // --- DETEKSI GESTUR SWIPE UP (UNTUK HP / LAYAR SENTUH) ---
+        lockscreen.addEventListener('touchstart', function(e) {
+            startY = e.touches[0].clientY; // Catat posisi awal jari
+        });
+
+        lockscreen.addEventListener('touchend', function(e) {
+            let endY = e.changedTouches[0].clientY; // Catat posisi akhir jari
+            // Jika digeser ke atas sejauh lebih dari 40 pixel
+            if (startY - endY > 40) {
+                bukaPasscode();
+            }
+        });
+
+        // --- DETEKSI MOUSE DRAG (UNTUK LAPTOP / PC) ---
+        lockscreen.addEventListener('mousedown', function(e) {
+            startY = e.clientY;
+            isMouseDown = true;
+        });
+
+        window.addEventListener('mouseup', function(e) {
+            if (!isMouseDown) return;
+            let endY = e.clientY;
+            if (startY - endY > 40) {
+                bukaPasscode();
+            }
+            isMouseDown = false;
+        });
+    </script>
+
+</body>
+</html>
